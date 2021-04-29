@@ -1,6 +1,6 @@
 let statement = "The Flintstones Rock";
 
-function flatten (phrase) {
+function flatten(phrase) {
     let result = {};
     let arr = phrase.split('').filter(char => {
         return char !== ' ';
