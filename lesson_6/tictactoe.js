@@ -43,6 +43,15 @@ function emptySquares(board) {
     })
 }
 
+function joinOR(arr, delimiter = ', ', conj = 'or') {
+    if (arr.length === 2) {
+        return arr.join(` ${conj} `)
+    } else if (arr.length > 2) {
+        let front = arr.slice(0, arr.length - 1).join(delimiter)
+        let end = arr.slice(-1)
+    }
+}
+
 function playerChoosesSquare(board) {
     let square;
 
@@ -98,14 +107,11 @@ function detectWinner(board) {
     }
 
     return null;
-
 }
-
-
 
 while (true) {
     let board = initializeBoard();
-    
+
     while (true) {
         displayBoard(board);
         
