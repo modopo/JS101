@@ -115,6 +115,7 @@ function detectWinner(board) {
 
 while (true) {
     let board = initializeBoard();
+    let score = [];
 
     while (true) {
         displayBoard(board);
@@ -130,8 +131,15 @@ while (true) {
 
     if (someoneWon(board)) {
         prompt(`${detectWinner(board)} won!`);
+        if (detectWinner(board) === 'Player') {
+            score[0] += 1;
+        } else if (detectWinner(board) === 'Computer') {
+            score[1] += 1;
+        }
+        prompt(`Player: ${score[0]} Computer: ${score[1]}`)
     } else {
         prompt("It's a tie!");
+        prompt(`Player: ${score[0]} Computer: ${score[1]}`)
     }
 
     prompt("Play again? (y/n)");
