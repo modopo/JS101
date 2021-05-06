@@ -2,6 +2,7 @@ const readline = require('readline-sync');
 const BLANK_SQUARE = ' ';
 const PLAYER_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
+const GAMES_TO_WIN_MATCH = 5;
 
 function prompt(message) {
     console.log(`=> ${message}`);
@@ -113,38 +114,75 @@ function detectWinner(board) {
     return null;
 }
 
-while (true) {
-    let board = initializeBoard();
-    let score = [];
-
-    while (true) {
-        displayBoard(board);
-        
-        playerChoosesSquare(board);
-        if (someoneWon(board) || boardFull(board)) break;
-
-        computerChoosesSquare(board);
-        if (someoneWon(board) || boardFull(board)) break;
+function initScore() {
+    let score = {
+        'player' : 0,
+        'computer' : 0,
     }
 
-    displayBoard(board);
-
-    if (someoneWon(board)) {
-        prompt(`${detectWinner(board)} won!`);
-        if (detectWinner(board) === 'Player') {
-            score[0] += 1;
-        } else if (detectWinner(board) === 'Computer') {
-            score[1] += 1;
-        }
-        prompt(`Player: ${score[0]} Computer: ${score[1]}`)
-    } else {
-        prompt("It's a tie!");
-        prompt(`Player: ${score[0]} Computer: ${score[1]}`)
-    }
-
-    prompt("Play again? (y/n)");
-    let answer = readline.question().toLowerCase()[0];
-    if (answer !== 'y') break;
+    return score;
 }
 
-prompt("Thanks for playing!")
+function displayScore(score) {
+    prompt(`Player: ${score.player} Computer: ${score.computer}`)
+}
+
+function matchWinner(score) {
+    if (score.player === GAMES_TO_WIN_MATCH) {
+        prompt('Player has reached 5 wins! The match goes to the Player.')
+        score.player = 0;
+        score.player = 0;
+    } else if (score.computer === GAMES_TO_WIN_MATCH) {
+        prompt('Computer has reached 5 wins! The match goes to the Computer.')
+        score.player = 0;
+        score.player = 0;
+    }
+
+    return score;
+}
+
+while (true) {
+    let score = initScore();
+
+    while(score.player !== GAMES_TO_WIN_MATCH || score.computer !== GAMES_TO_WIN_MATCH) {
+        let board = initializeBoard();
+
+        while (true) {
+            displayBoard(board);
+            
+            playerChoosesSquare(board);
+            if (someoneWon(board) || boardFull(board)) break;
+    
+            computerChoosesSquare(board);
+            if (someoneWon(board) || boardFull(board)) break;
+        }
+    
+        displayBoard(board);
+    
+        if (someoneWon(board)) {
+            prompt(`${detectWinner(board)} won!`);
+            if (detectWinner(board) === 'Player') {
+                score.player += 1;
+            } else {
+                score.computer += 1;
+            }
+            displayScore(score);
+        } else {
+            prompt("It's a tie!");
+            displayScore(score);
+        }
+        
+        score = matchWinner(score);
+        prompt("Play again? (y/n)");
+        let answer = readline.question().toLowerCase()[0];
+        while (answer !== 'y' && answer !== 'n') {
+            prompt("Sorry, that's an invalid input. Please choose between 'y' or 'n'")
+            prompt("Play again? (y/n)");
+            answer = readline.question().toLowerCase()[0];
+        }
+        if(answer !== 'y') break;
+    }
+    
+    prompt("Thanks for playing!")
+    break;
+}
