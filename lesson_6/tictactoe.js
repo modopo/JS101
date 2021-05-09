@@ -3,6 +3,11 @@ const BLANK_SQUARE = ' ';
 const PLAYER_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 const GAMES_TO_WIN_MATCH = 5;
+const WINNING_LINES = [
+    [1, 2, 3], [4, 5, 6], [7, 8, 9],
+    [1, 4, 7], [2, 5, 8], [3, 6, 9],
+    [1, 5, 9], [3, 5, 7]
+]
 
 function prompt(message) {
     console.log(`=> ${message}`);
@@ -73,10 +78,41 @@ function playerChoosesSquare(board) {
 }
 
 function computerChoosesSquare(board) {
-    let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
+    let square;
+    
+    for(let index = 0; index < WINNING_LINES.length; index++) {
+        let lineToCheck = WINNING_LINES[index];
+        square = findAtRiskSquares(lineToCheck, board, COMPUTER_MARKER);
+        if (square) break;
+    }
+    
+    if (!square) {
+        for(let index = 0; index < WINNING_LINES.length; index++) {
+            let lineToCheck = WINNING_LINES[index];
+            square = findAtRiskSquares(lineToCheck, board, PLAYER_MARKER);
+            if (square) break;
+        }
+    }
 
-    let square = emptySquares(board)[randomIndex];
+    if (!square) {
+        let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
+        square = emptySquares(board)[randomIndex];
+    }
+
     board[square] = COMPUTER_MARKER;
+}
+
+function findAtRiskSquares(line, board, mark) {
+    let markersInLline = line.map(square => board[square]);
+
+    if (markersInLline.filter(marker => marker === mark).length === 2) {
+        let unusedSpace = line.find(square => board[square] === ' ')
+        if (unusedSpace != undefined) {
+            return unusedSpace;
+        }
+    }
+
+    return null;
 }
 
 function boardFull(board) {
@@ -88,14 +124,8 @@ function someoneWon(board) {
 }
 
 function detectWinner(board) {
-    let winningLines = [
-        [1, 2, 3], [4, 5, 6], [7, 8, 9], // rows
-        [1, 4, 7], [2, 5, 8], [3, 6, 9], // columns
-        [1, 5, 9], [3, 5, 7]
-    ]
-
-    for (let line = 0; line < winningLines.length; line++) {
-        let [sq1, sq2, sq3] = winningLines[line]
+    for (let line = 0; line < WINNING_LINES.length; line++) {
+        let [sq1, sq2, sq3] = WINNING_LINES[line]
         if (
             board[sq1] === PLAYER_MARKER &&
             board[sq2] === PLAYER_MARKER &&
@@ -116,8 +146,8 @@ function detectWinner(board) {
 
 function initScore() {
     let score = {
-        'player' : 0,
-        'computer' : 0,
+        'player': 0,
+        'computer': 0,
     }
 
     return score;
@@ -144,21 +174,21 @@ function matchWinner(score) {
 while (true) {
     let score = initScore();
 
-    while(score.player !== GAMES_TO_WIN_MATCH || score.computer !== GAMES_TO_WIN_MATCH) {
+    while (score.player !== GAMES_TO_WIN_MATCH || score.computer !== GAMES_TO_WIN_MATCH) {
         let board = initializeBoard();
 
         while (true) {
             displayBoard(board);
-            
+
             playerChoosesSquare(board);
             if (someoneWon(board) || boardFull(board)) break;
-    
+
             computerChoosesSquare(board);
             if (someoneWon(board) || boardFull(board)) break;
         }
-    
+
         displayBoard(board);
-    
+
         if (someoneWon(board)) {
             prompt(`${detectWinner(board)} won!`);
             if (detectWinner(board) === 'Player') {
@@ -171,7 +201,7 @@ while (true) {
             prompt("It's a tie!");
             displayScore(score);
         }
-        
+
         score = matchWinner(score);
         prompt("Play again? (y/n)");
         let answer = readline.question().toLowerCase()[0];
@@ -180,9 +210,9 @@ while (true) {
             prompt("Play again? (y/n)");
             answer = readline.question().toLowerCase()[0];
         }
-        if(answer !== 'y') break;
+        if (answer !== 'y') break;
     }
-    
+
     prompt("Thanks for playing!")
     break;
 }
