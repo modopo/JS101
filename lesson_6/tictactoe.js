@@ -202,6 +202,22 @@ function resetScore(score) {
     return score;
 }
 
+function updateScore(board, score) {
+    winner = detectWinner(board)
+
+    if (winner === 'Player') {
+        score.player += 1;
+        prompt(`${winner} won!`);
+    } else if (winner === 'Computer') {
+        score.computer += 1;
+        prompt(`${winner} won!`);
+    } else {
+        prompt("It's a tie!")
+    }
+
+    displayScore(score);
+}
+
 function displayScore(score) {
     prompt(`Player: ${score.player} Computer: ${score.computer}`)
 }
@@ -234,19 +250,7 @@ while (true) {
         }
 
         displayBoard(board);
-
-        if (someoneWon(board)) {
-            prompt(`${detectWinner(board)} won!`);
-            if (detectWinner(board) === 'Player') {
-                score.player += 1;
-            } else {
-                score.computer += 1;
-            }
-            displayScore(score);
-        } else {
-            prompt("It's a tie!");
-            displayScore(score);
-        }
+        updateScore(board, score);
 
         score = matchWinner(score);
         prompt("Play again? (y/n)");
