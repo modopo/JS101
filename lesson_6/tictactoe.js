@@ -34,15 +34,15 @@ function displayBoard(board) {
     console.log(`You are ${PLAYER_MARKER}. Computer is ${COMPUTER_MARKER}`);
 
     console.log('');
-    console.log('     |     |');
+    console.log('  1  |  2  |  3');
     console.log(`  ${board['1']}  |  ${board['2']}  |  ${board['3']}`);
     console.log('     |     |');
     console.log('-----+-----+-----');
-    console.log('     |     |');
+    console.log('  4  |  5  |  6');
     console.log(`  ${board['4']}  |  ${board['5']}  |  ${board['6']}`);
     console.log('     |     |');
     console.log('-----+-----+-----');
-    console.log('     |     |');
+    console.log('  7  |  8  |  9');
     console.log(`  ${board['7']}  |  ${board['8']}  |  ${board['9']}`);
     console.log('     |     |');
     console.log('');
@@ -234,6 +234,18 @@ function matchWinner(score) {
     return score;
 }
 
+function playAgain() {
+    prompt("Play again? (y/n)");
+    let answer = readline.question().toLowerCase()[0];
+    while (answer !== 'y' && answer !== 'n') {
+        prompt("Sorry, that's an invalid input. Please choose between 'y' or 'n'")
+        prompt("Play again? (y/n)");
+        answer = readline.question().toLowerCase()[0];
+    }
+
+    return answer;
+}
+
 while (true) {
     let score = initScore();
 
@@ -253,13 +265,7 @@ while (true) {
         updateScore(board, score);
 
         score = matchWinner(score);
-        prompt("Play again? (y/n)");
-        let answer = readline.question().toLowerCase()[0];
-        while (answer !== 'y' && answer !== 'n') {
-            prompt("Sorry, that's an invalid input. Please choose between 'y' or 'n'")
-            prompt("Play again? (y/n)");
-            answer = readline.question().toLowerCase()[0];
-        }
+        answer = playAgain();
         if (answer !== 'y') break;
     }
 
