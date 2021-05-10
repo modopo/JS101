@@ -34,15 +34,15 @@ function displayBoard(board) {
     console.log(`You are ${PLAYER_MARKER}. Computer is ${COMPUTER_MARKER}`);
 
     console.log('');
-    console.log('  1  |  2  |  3');
+    console.log('1    |2    |3');
     console.log(`  ${board['1']}  |  ${board['2']}  |  ${board['3']}`);
     console.log('     |     |');
     console.log('-----+-----+-----');
-    console.log('  4  |  5  |  6');
+    console.log('4    |5    |6');
     console.log(`  ${board['4']}  |  ${board['5']}  |  ${board['6']}`);
     console.log('     |     |');
     console.log('-----+-----+-----');
-    console.log('  7  |  8  |  9');
+    console.log('7    |8    |9');
     console.log(`  ${board['7']}  |  ${board['8']}  |  ${board['9']}`);
     console.log('     |     |');
     console.log('');
