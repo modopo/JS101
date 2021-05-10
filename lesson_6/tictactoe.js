@@ -246,6 +246,7 @@ function playAgain() {
     return answer;
 }
 
+//main
 while (true) {
     let score = initScore();
 
