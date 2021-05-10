@@ -3,6 +3,8 @@ const BLANK_SQUARE = ' ';
 const PLAYER_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 const GAMES_TO_WIN_MATCH = 5;
+const NO_RISK_DEFAULT_SQUARE = 5;
+const PLAYERS = ['Player', 'Computer', 'Random']
 const WINNING_LINES = [
     [1, 2, 3], [4, 5, 6], [7, 8, 9],
     [1, 4, 7], [2, 5, 8], [3, 6, 9],
@@ -11,6 +13,19 @@ const WINNING_LINES = [
 
 function prompt(message) {
     console.log(`=> ${message}`);
+}
+
+function joinOr(arr, delimiter = ', ', conj = 'or') {
+    if (arr.length === 2) {
+        return arr.join(` ${conj} `)
+    } else if (arr.length > 2) {
+        let front = arr.slice(0, arr.length - 1).join(delimiter)
+        let end = arr.slice(-1)
+
+        return front.concat(` ${conj} `, end);
+    }
+
+    return arr.join(conj);
 }
 
 function displayBoard(board) {
@@ -43,23 +58,45 @@ function initializeBoard() {
     return board;
 }
 
+function chooseWhoStarts() {
+    prompt(`Please choose who starts: ${PLAYERS[0]}, ${PLAYERS[1]} or ${PLAYERS[2]} (p/c/r)`);
+
+    let answer = readline.question().toLowerCase()[0];
+    while (answer != 'p' && answer != 'c' && answer != 'r') {
+        prompt("Sorry, that's an invalid input. Please choose 'p', 'c' or 'r'");
+        answer = readline.question().toLowerCase()[0];
+    }
+
+    if (answer === 'r') {
+        let randomIndex = Math.floor(Math.random() * (PLAYERS.length - 1));
+        return PLAYERS[randomIndex];
+    } else if (answer === 'c') {
+        return PLAYERS[1];
+    } else if (answer === 'p') {
+        return PLAYERS[0];
+    }
+}
+
+function alternatePlayer(player) {
+    if (player === PLAYERS[0]) {
+        return PLAYERS[1];
+    } else if (player === PLAYERS[1]) {
+        return PLAYERS[0];
+    }
+}
+
 function emptySquares(board) {
     return Object.keys(board).filter(key => {
         return board[key] === BLANK_SQUARE;
     })
 }
 
-function joinOr(arr, delimiter = ', ', conj = 'or') {
-    if (arr.length === 2) {
-        return arr.join(` ${conj} `)
-    } else if (arr.length > 2) {
-        let front = arr.slice(0, arr.length - 1).join(delimiter)
-        let end = arr.slice(-1)
-
-        return front.concat(` ${conj} `, end);
+function chooseSquare(board, player) {
+    if (player === 'Player') {
+        playerChoosesSquare(board);
+    } else {
+        computerChoosesSquare(board);
     }
-
-    return arr.join(conj);
 }
 
 function playerChoosesSquare(board) {
@@ -79,20 +116,13 @@ function playerChoosesSquare(board) {
 
 function computerChoosesSquare(board) {
     let square;
-    
-    for(let index = 0; index < WINNING_LINES.length; index++) {
-        let lineToCheck = WINNING_LINES[index];
-        square = findAtRiskSquares(lineToCheck, board, COMPUTER_MARKER);
-        if (square) break;
-    }
-    
-    if (!square) {
-        for(let index = 0; index < WINNING_LINES.length; index++) {
-            let lineToCheck = WINNING_LINES[index];
-            square = findAtRiskSquares(lineToCheck, board, PLAYER_MARKER);
-            if (square) break;
-        }
-    }
+
+    let offense = findAtRiskSquares(board, COMPUTER_MARKER);
+    let defense = findAtRiskSquares(board, PLAYER_MARKER);
+    let middleDefault = defaultToFive(defense, offense, board);
+
+    //short circuit
+    square = offense || defense || middleDefault;
 
     if (!square) {
         let randomIndex = Math.floor(Math.random() * emptySquares(board).length);
@@ -102,13 +132,25 @@ function computerChoosesSquare(board) {
     board[square] = COMPUTER_MARKER;
 }
 
-function findAtRiskSquares(line, board, mark) {
-    let markersInLline = line.map(square => board[square]);
+function findAtRiskSquares(board, mark) {
+    for (let index = 0; index < WINNING_LINES.length; index++) {
+        let lineToCheck = WINNING_LINES[index];
+        let markersInLline = lineToCheck.map(square => board[square]);
+        if (markersInLline.filter(marker => marker === mark).length === 2) {
+            let unusedSpace = lineToCheck.find(square => board[square] === ' ')
+            if (unusedSpace != undefined) {
+                return unusedSpace;
+            }
+        }
+    }
 
-    if (markersInLline.filter(marker => marker === mark).length === 2) {
-        let unusedSpace = line.find(square => board[square] === ' ')
-        if (unusedSpace != undefined) {
-            return unusedSpace;
+    return null;
+}
+
+function defaultToFive(defense, offense, board) {
+    if (!offense || !defense) {
+        if (board[NO_RISK_DEFAULT_SQUARE] === BLANK_SQUARE) {
+            return NO_RISK_DEFAULT_SQUARE
         }
     }
 
@@ -153,6 +195,13 @@ function initScore() {
     return score;
 }
 
+function resetScore(score) {
+    score.player = 0;
+    score.computer = 0;
+
+    return score;
+}
+
 function displayScore(score) {
     prompt(`Player: ${score.player} Computer: ${score.computer}`)
 }
@@ -160,12 +209,10 @@ function displayScore(score) {
 function matchWinner(score) {
     if (score.player === GAMES_TO_WIN_MATCH) {
         prompt('Player has reached 5 wins! The match goes to the Player.')
-        score.player = 0;
-        score.player = 0;
+        score = resetScore(score);
     } else if (score.computer === GAMES_TO_WIN_MATCH) {
         prompt('Computer has reached 5 wins! The match goes to the Computer.')
-        score.player = 0;
-        score.player = 0;
+        score = resetScore(score);
     }
 
     return score;
@@ -176,14 +223,13 @@ while (true) {
 
     while (score.player !== GAMES_TO_WIN_MATCH || score.computer !== GAMES_TO_WIN_MATCH) {
         let board = initializeBoard();
+        let player = chooseWhoStarts();
 
         while (true) {
             displayBoard(board);
 
-            playerChoosesSquare(board);
-            if (someoneWon(board) || boardFull(board)) break;
-
-            computerChoosesSquare(board);
+            chooseSquare(board, player);
+            player = alternatePlayer(player);
             if (someoneWon(board) || boardFull(board)) break;
         }
 
