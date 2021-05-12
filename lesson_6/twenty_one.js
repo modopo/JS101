@@ -1,10 +1,10 @@
 const readline = require('readline-sync');
 const PLAYERS = ['Player', 'Dealer'];
 const FULL_DECK = {
-    'Club': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'],
-    'Diamond': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'],
-    'Heart': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'],
-    'Spade': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
+    'C': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'],
+    'D': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'],
+    'H': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'],
+    'S': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
 };
 const STARTING_CARD_NUMBER = 2;
 
@@ -14,6 +14,7 @@ function prompt(message) {
 
 function randomIndex(arr) {
     let index = Math.floor(Math.random() * arr.length)
+
     return index;
 }
 
@@ -30,7 +31,7 @@ function initTable(deck) {
     }
 
     Object.keys(table).forEach(key => {
-        for(let index = 0; index < STARTING_CARD_NUMBER; index++) {
+        for (let index = 0; index < STARTING_CARD_NUMBER; index++) {
             table[key].push(selectRandomCard(deck));
         }
     });
@@ -41,13 +42,51 @@ function initTable(deck) {
 function selectRandomCard(deck) {
     let suits = Object.keys(deck).filter(suit => deck[suit].length > 0)
     let chosenSuit = suits[randomIndex(suits)];
+    let card = [chosenSuit, deck[chosenSuit].splice(randomIndex(deck[chosenSuit]), 1)[0]]
 
-    return deck[chosenSuit].splice(randomIndex(deck[chosenSuit]), 1)[0];
-};
+    return card;
+}
+
+function calculateTotal(hand) {
+    let values = hand.map(card => card[1]);
+    
+    let sum = 0;
+    values.forEach(value => {
+        if (value === 'A') {
+            sum += 11;
+        } else if (['J', 'Q', 'K'].includes(value)) {
+            sum += 10;
+        } else {
+            sum += Number(value);
+        }
+    });
+
+    values.filter(value => value === 'A').forEach(instance => {
+        if (sum > 21) {
+            sum -= 10;
+        }
+    });
+
+    return sum;
+}
+
 
 let deck = initDeck();
 let table = initTable(deck);
-
 console.log(deck);
 console.log(table);
+console.log(calculateTotal(table['Player']));
+console.log(calculateTotal(table['Dealer']));
+
+
+/*main
+while (true) {
+    let deck = initDeck();
+    let table = initTable(deck);
+
+    while(true) {
+        break;
+    }
+    break;
+} */
 
