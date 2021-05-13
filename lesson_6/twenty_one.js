@@ -6,10 +6,24 @@ const FULL_DECK = {
     'H': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'],
     'S': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
 };
+const FACE_CARD_NAMES = [['J', 'Jack'], ['Q', 'Queen'], ['K', 'King'], ['A', 'Ace']];
 const STARTING_CARD_NUMBER = 2;
 
 function prompt(message) {
     console.log(`=> ${message}`);
+}
+
+function joinWithDelimiters(arr) {
+    if (arr.length === 2) {
+        return arr.join(' and ')
+    } else if (arr.length > 2) {
+        let front = arr.slice(0, arr.length - 1).join(', ');
+        let end = arr.slice(-1);
+
+        return front.concat(' and ', end);
+    }
+
+    return arr.join();
 }
 
 function randomIndex(arr) {
@@ -24,15 +38,19 @@ function initDeck() {
     return deck;
 };
 
+function addCardToHand(table, card, side) {
+    table[side].push(card);
+}
+
 function initTable(deck) {
     let table = {
-        'Player': [],
-        'Dealer': []
+        'player': [],
+        'dealer': []
     }
 
     Object.keys(table).forEach(key => {
         for (let index = 0; index < STARTING_CARD_NUMBER; index++) {
-            table[key].push(selectRandomCard(deck));
+            addCardToHand(table, selectRandomCard(deck), key);
         }
     });
 
@@ -49,7 +67,7 @@ function selectRandomCard(deck) {
 
 function calculateTotal(hand) {
     let values = hand.map(card => card[1]);
-    
+
     let sum = 0;
     values.forEach(value => {
         if (value === 'A') {
@@ -70,23 +88,61 @@ function calculateTotal(hand) {
     return sum;
 }
 
+function fullFaceName(cardValue) {
+    let key = FACE_CARD_NAMES.map(pair => pair[0]);
+    let value = FACE_CARD_NAMES.map(pair => pair[1]);
+    if (key.includes(cardValue)) {
+        return value[key.indexOf(cardValue)];
+    }
 
-let deck = initDeck();
-let table = initTable(deck);
-console.log(deck);
-console.log(table);
-console.log(calculateTotal(table['Player']));
-console.log(calculateTotal(table['Dealer']));
+    return String(cardValue);
+}
+
+function numericalValue(table, side) {
+    return table[side].map(card => fullFaceName(card[1]))
+}
 
 
-/*main
+function displayHand(table) {
+    console.clear();
+    console.log(`Dealer has: ${fullFaceName(table.dealer[0][1])} and an unknown card`);
+    console.log(`Player has: ${joinWithDelimiters(numericalValue(table, 'player'))}`)
+}
+
 while (true) {
     let deck = initDeck();
     let table = initTable(deck);
+    let playerTotal = calculateTotal(table['player']);
+    let dealerTotal = calculateTotal(table['dealer']);
+    
 
-    while(true) {
-        break;
-    }
+    while (true) {
+        displayHand(table);
+        
+        prompt("Hit (H) or Stay (S)?");
+        let answer = readline.question().toLowerCase()[0];
+        while (answer !== 'h' && answer !== 's') {
+            prompt("Sorry, that's an invalid input. Please choose 'h' to hit or 's' to stay.");
+            answer = readline.question().toLowerCase()[0];
+        }
+
+        if (answer === 'h') {
+            addCardToHand(table, selectRandomCard(deck), 'player');
+            displayHand(table);
+        }
+
+        playerTotal = calculateTotal(table['player'])
+        if (playerTotal > 21) {
+            prompt(`Players total is ${playerTotal} and exceeded 21.`);
+            break;
+        } else if (answer === 's') {
+            prompt("Player has chose to stay.")
+            while (true) {
+                break;
+            }
+            break;
+        }
+    } 
+
     break;
-} */
-
+}
