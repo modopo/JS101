@@ -62,7 +62,7 @@ function chooseWhoStarts() {
     prompt(`Please choose who starts: ${PLAYERS[0]}, ${PLAYERS[1]} or ${PLAYERS[2]} (p/c/r)`);
 
     let answer = readline.question().toLowerCase()[0];
-    while (answer != 'p' && answer != 'c' && answer != 'r') {
+    while (answer !== 'p' && answer !== 'c' && answer !== 'r') {
         prompt("Sorry, that's an invalid input. Please choose 'p', 'c' or 'r'");
         answer = readline.question().toLowerCase()[0];
     }

@@ -1,5 +1,4 @@
 const readline = require('readline-sync');
-const PLAYERS = ['Player', 'Dealer'];
 const FULL_DECK = {
     'C': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'],
     'D': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'],
@@ -102,11 +101,27 @@ function numericalValue(table, side) {
     return table[side].map(card => fullFaceName(card[1]))
 }
 
-
 function displayHand(table) {
     console.clear();
-    console.log(`Dealer has: ${fullFaceName(table.dealer[0][1])} and an unknown card`);
+    console.log(`Dealer has: ${fullFaceName(table.dealer[0][1])} and ${numericalValue(table, 'dealer').length - 1} unknown card`);
     console.log(`Player has: ${joinWithDelimiters(numericalValue(table, 'player'))}`)
+}
+
+function hitOrStay() {
+    prompt("Hit (H) or Stay (S)?");
+    let answer = readline.question().toLowerCase()[0];
+    while (answer !== 'h' && answer !== 's') {
+        prompt("Sorry, that's an invalid input. Please choose 'h' to hit or 's' to stay.");
+        answer = readline.question().toLowerCase()[0];
+    }
+
+    return answer;
+}
+
+function dealerPlay(table, deck) {
+    while (calculateTotal(table['dealer']) < 17) {
+        addCardToHand(table, selectRandomCard(deck), 'dealer')
+    }
 }
 
 while (true) {
@@ -114,17 +129,10 @@ while (true) {
     let table = initTable(deck);
     let playerTotal = calculateTotal(table['player']);
     let dealerTotal = calculateTotal(table['dealer']);
-    
 
     while (true) {
         displayHand(table);
-        
-        prompt("Hit (H) or Stay (S)?");
-        let answer = readline.question().toLowerCase()[0];
-        while (answer !== 'h' && answer !== 's') {
-            prompt("Sorry, that's an invalid input. Please choose 'h' to hit or 's' to stay.");
-            answer = readline.question().toLowerCase()[0];
-        }
+        let answer = hitOrStay();
 
         if (answer === 'h') {
             addCardToHand(table, selectRandomCard(deck), 'player');
@@ -132,17 +140,17 @@ while (true) {
         }
 
         playerTotal = calculateTotal(table['player'])
+
         if (playerTotal > 21) {
             prompt(`Players total is ${playerTotal} and exceeded 21.`);
             break;
         } else if (answer === 's') {
             prompt("Player has chose to stay.")
-            while (true) {
-                break;
-            }
+            dealerPlay(table, deck);
+            console.log(calculateTotal(table['dealer']));
             break;
         }
-    } 
+    }
 
     break;
 }
