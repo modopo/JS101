@@ -101,20 +101,14 @@ function displayScore(score) {
 }
 
 function updateScoreToWinner(score, winner) {
-    score.winner += 1;
-
-    if (winner === 'player') {
-        prompt('You are a winner!');
-    } else if (winner === 'dealer') {
-        prompt('Dealer is the winner.');
+    if (winner !== '') {
+        score[winner] += 1;
     }
-
-    displayScore(score);
 }
 
 function resetScore(score) {
     score.player = 0;
-    score.computer = 0;
+    score.dealer = 0;
 
     return score;
 }
@@ -147,35 +141,20 @@ function calculateTotal(hand) {
 function determineBust(table, side) {
     let total = calculateTotal(table[side]);
 
-    if (side === 'player' && total > BEST_HAND_VALUE) {
-        displayHands(table, false);
-        prompt(`You've exceeded 21 with a total of ${total}.`);
-        return true;
-    } else if (side === 'dealer' && total > BEST_HAND_VALUE) {
-        displayHands(table, false);
-        prompt(`The dealer exceeded 21 with a total of ${total}.`);
-        return true;
-    }
-
-    return false;
+    return total > BEST_HAND_VALUE;
 }
 
-function determineWinner(table, score) {
+function determineWinner(table) {
     let playerTotal = calculateTotal(table['player']);
     let dealerTotal = calculateTotal(table['dealer']);
 
-    displayHands(table, false);
-    prompt(`The player has a total of ${playerTotal}. The dealer has a total of ${dealerTotal}`);
-
     if (playerTotal > dealerTotal) {
-        updateScoreToWinner(score, 'player');
+        return 'player';
     } else if (playerTotal < dealerTotal) {
-        updateScoreToWinner(score, 'dealer');
-    } else {
-        prompt("It's a tie!");
+        return 'dealer';
     }
 
-    displayScore(score);
+    return '';
 }
 
 function determineMatch(score) {
@@ -191,14 +170,15 @@ function determineMatch(score) {
 }
 
 //Interface------------------------------------------------------------------------------
-function displayHands(table, hidden = true) {
+function displayHands(table, score, hidden = true) {
+    console.clear();
+    displayScore(score);
+
     if (hidden) {
-        console.clear();
-        console.log(`Dealer has: ${justFaceNames(table.dealer[0][1])} and (${justNumericalValue(table, 'dealer').length - 1}) unknown card`);
+        console.log(`Dealer has: ${justFaceNames(table.dealer[0][1])} and (${justNumericalValue(table, 'dealer').length - 1}) unknown card(s)`);
         console.log(`Player has: ${joinWithDelimiters(justNumericalValue(table, 'player'))}`);
         console.log('-----------------------------------');
     } else {
-        console.clear();
         console.log(`Dealer has: ${joinWithDelimiters(justNumericalValue(table, 'dealer'))}`);
         console.log(`Player has: ${joinWithDelimiters(justNumericalValue(table, 'player'))}`);
         console.log('-----------------------------------');
@@ -232,12 +212,37 @@ function dealerPlays(table, deck) {
 }
 
 function revealWinner(table, score) {
-    displayHands(table, true);
+    displayHands(table, score, true);
     prompt(`The Dealer has chosen to stay after being dealt ${justNumericalValue(table, 'dealer').length - 2} card.`);
     prompt("Press [ENTER] to reveal the winner!");
     let answer = readline.question();
+}
 
-    determineWinner(table, score);
+function endSequence(table, score, winner, busted = false) {
+    updateScoreToWinner(score, winner);
+    displayHands(table, score, false);
+
+    let playerTotal = calculateTotal(table['player']);
+    let dealerTotal = calculateTotal(table['dealer']);
+
+    if (busted) {
+        if (winner === 'dealer') {
+            prompt(`Your total is ${playerTotal} and exceeded ${BEST_HAND_VALUE}.`);
+        } else if (winner === 'player') {
+            prompt(`The dealer was dealt ${justNumericalValue(table, 'dealer').length - 2} card(s).`);
+            prompt(`The dealer's total is ${dealerTotal} and exceeded ${BEST_HAND_VALUE}.`);
+        }
+        prompt(`The winnner is the ${winner}!`);
+    }
+
+    if (!busted) {
+        prompt(`Your total is ${playerTotal} and the dealer's total is ${dealerTotal}`);
+        if (playerTotal === dealerTotal) {
+            prompt("It was a tie!");
+        } else {
+            prompt(`The winnner is the ${winner}!`);
+        }
+    }
 }
 
 function playAgain() {
@@ -261,18 +266,18 @@ while (true) {
         let table = initTable(deck);
 
         while (true) {
-            displayHands(table);
+            displayHands(table, score);
 
             let answer = hitOrStay();
             if (answer === 'h') {
                 addCardToHand(table, selectRandomCard(deck), 'player');
-                displayHands(table);
+                displayHands(table, score);
             }
 
             let playerBusted = determineBust(table, 'player');
 
             if (playerBusted) {
-                updateScoreToWinner(score, 'dealer');
+                endSequence(table, score, 'dealer', playerBusted);
                 break;
             } else if (answer === 's') {
                 beginDealerTurn(table, deck);
@@ -280,9 +285,11 @@ while (true) {
                 let dealerBusted = determineBust(table, 'dealer');
 
                 if (dealerBusted) {
-                    updateScoreToWinner(score, 'player');
+                    endSequence(table, score, 'player', dealerBusted);
+                    break;
                 } else {
                     revealWinner(table, score);
+                    endSequence(table, score, determineWinner(table));
                 }
 
                 break;
@@ -295,4 +302,5 @@ while (true) {
         if (answer !== 'y') break;
     }
     prompt("Thanks for playing!");
+    break;
 }
