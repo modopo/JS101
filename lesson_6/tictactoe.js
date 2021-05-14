@@ -266,7 +266,7 @@ while (true) {
         updateScore(board, score);
 
         score = matchWinner(score);
-        answer = playAgain();
+        let answer = playAgain();
         if (answer !== 'y') break;
     }
 
