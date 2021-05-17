@@ -6,7 +6,7 @@ const FULL_DECK = {
   "♠": [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
 };
 const FACE_CARD_NAMES = [['J', 'Jack'], ['Q', 'Queen'],
-  ['K', 'King'], ['A', 'Ace']];
+['K', 'King'], ['A', 'Ace']];
 const STARTING_CARD_NUMBER = 2;
 const DEALER_MIN = 17;
 const BEST_HAND_VALUE = 21;
