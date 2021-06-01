@@ -15,5 +15,7 @@ if (operation === 's') {
     result *= index;
   }
   console.log(`The product of the integers between 1 and ${number} is ${result}`);
+} else {
+  console.log("Unknown operation.")
 }
 
