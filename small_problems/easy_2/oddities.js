@@ -12,4 +12,4 @@ function oddities(var1) {
     return result;
 }
 
-console.log(oddities([]));
+console.log(oddities([2, 3, 4, 5, 6]));
