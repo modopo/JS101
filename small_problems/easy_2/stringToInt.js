@@ -26,5 +26,20 @@ function stringToInteger(input) {
     return value;
 }
 
+function stringToSignedInteger(value) {
+    switch (value[0]) {
+        case "-":
+            return -stringToInteger(value.slice(1, value.length));
+        case "+":
+            return stringToInteger(value.slice(1, value.length));
+        default:
+            return stringToInteger(value);
+    }
+}
+
 console.log(stringToInteger("4321") == 4321);
 console.log(stringToInteger('570') === 570);
+
+console.log(stringToSignedInteger("4321") === 4321); // logs true
+console.log(stringToSignedInteger("-570") === -570); // logs true
+console.log(stringToSignedInteger("+100") === 100);
