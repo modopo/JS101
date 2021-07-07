@@ -10,3 +10,4 @@ function logInBox(input) {
 }
 
 logInBox('this is a test.');
+logInBox('this is not a test but a real demonstration.')
