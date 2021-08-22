@@ -1,16 +1,31 @@
 function wordSizes(str) {
-    let arr = str.split(' ');
     let result = {}
-
     if (str.length === 0) {
         return result;
     }
 
+    let arr = str.split(' ');
+
     arr.forEach(elem => {
-        if (Object.keys(result).includes(String(elem.length))) {
-            result[String(elem.length)] += 1;
+        let scrubbed = lettersOnly(elem.toLowerCase())
+
+        if (result.hasOwnProperty(String(scrubbed.length))) {
+            result[String(scrubbed.length)] += 1;
         } else {
-            result[String(elem.length)] = 1;
+            result[String(scrubbed.length)] = 1;
+        }
+    })
+
+    return result;
+}
+
+function lettersOnly(str) {
+    let result = '';
+    let arr = str.split('');
+
+    arr.forEach(char => {
+        if (char >= 'a' && char <= 'z') {
+            result += char;
         }
     })
 
@@ -18,4 +33,5 @@ function wordSizes(str) {
 }
 
 console.log(wordSizes('Four score and seven.'));
+console.log(wordSizes('Hey diddle diddle, the cat and the fiddle!'))
 console.log(wordSizes(''));
