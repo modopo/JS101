@@ -12,4 +12,4 @@ function doubleConsonants(string) {
     return result.join('');
 }
 
-console.log(doubleConsonants('July 4th'));
+console.log(doubleConsonants('Hello-World!'));
