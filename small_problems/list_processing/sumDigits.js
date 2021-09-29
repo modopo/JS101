@@ -1,6 +1,6 @@
 function sum(number) {
-    return String(number).split('').reduce((number, accum) => {
-        return Number(number) + Number(accum);
+    return String(number).split('').reduce((accum, number) => {
+        return Number(accum) + Number(number);
     })
 }
 
