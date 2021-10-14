@@ -11,5 +11,16 @@ function leadingSubstrings(string) {
 
 }
 
-console.log(leadingSubstrings('abcd'));
+function substrings(string) {
+    let result = [];
+
+    for (let index = 0; index < string.length; index++) {
+        let substring = string.substring(index);
+        result = result.concat(leadingSubstrings(substring));
+    }
+
+    return result;
+}
+
+console.log(substrings('abcd'));
 
