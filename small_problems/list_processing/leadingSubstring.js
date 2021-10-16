@@ -22,5 +22,18 @@ function substrings(string) {
     return result;
 }
 
+function isPalindrome(string) {
+    return string.length > 1 && string == string.split('').reverse().join('')
+}
+
+function palindromes(string) {
+    return substrings(string).filter(word => {
+        return (isPalindrome(word))
+    });
+}
+
+console.log(isPalindrome('aba'));
 console.log(substrings('abcd'));
+
+console.log(palindromes('madam'));
 
