@@ -11,3 +11,4 @@ function rotateArray(array) {
 }
 
 console.log(rotateArray([1,2,3,4]));
+console.log(rotateArray(['a','b','c']));
