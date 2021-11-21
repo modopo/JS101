@@ -10,5 +10,17 @@ function rotateArray(array) {
     return array.slice(1).concat(array[0]);
 }
 
-console.log(rotateArray([1,2,3,4]));
-console.log(rotateArray(['a','b','c']));
+function rotateRightMostDigits(number, count) {
+    let numberString = String(number);
+
+    let beginning = numberString.slice(0, numberString.length - count);
+    let end = rotateString(numberString.slice(numberString.length - count));
+
+    return Number(beginning + end);
+}
+
+function rotateString(string) {
+    return string.slice(1) + string[0];
+}
+
+console.log(rotateRightMostDigits(12345, 3));
