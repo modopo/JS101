@@ -10,4 +10,4 @@ function rotateArray(array) {
     return array.slice(1).concat(array[0]);
 }
 
-console.log(rotateArray([1,2,3,4]))
+console.log(rotateArray([1,2,3,4]));
