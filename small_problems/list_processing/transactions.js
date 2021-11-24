@@ -31,5 +31,5 @@ let transactions = [{ id: 101, movement: 'in', quantity: 5 },
 { id: 102, movement: 'in', quantity: 22 },
 { id: 103, movement: 'out', quantity: 15 },];
 
-console.log(transactionsFor(101, transactions));
+console.log(transactionsFor(105, transactions));
 console.log(isItemAvailable(105, transactions));
