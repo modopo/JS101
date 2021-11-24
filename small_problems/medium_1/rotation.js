@@ -1,15 +1,3 @@
-function rotateArray(array) {
-    if (!Array.isArray(array)) {
-        return undefined;
-    }
-
-    if (array.length === 0) {
-        return [];
-    }
-
-    return array.slice(1).concat(array[0]);
-}
-
 function rotateRightMostDigits(number, count) {
     let numberString = String(number);
 
@@ -23,4 +11,16 @@ function rotateString(string) {
     return string.slice(1) + string[0];
 }
 
-console.log(rotateRightMostDigits(12345, 3));
+console.log(rotateRightMostDigits(735291, 2));
+
+function maxRotation(number) {
+    let maxrotated = number;
+
+    for (let count = String(number).length; count > 0; count--) {
+        maxrotated = rotateRightMostDigits(maxrotated, count);
+    }
+
+    return maxrotated;
+}
+
+console.log(maxRotation(105));
