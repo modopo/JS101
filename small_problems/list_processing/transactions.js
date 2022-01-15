@@ -33,3 +33,4 @@ let transactions = [{ id: 101, movement: 'in', quantity: 5 },
 
 console.log(transactionsFor(105, transactions));
 console.log(isItemAvailable(105, transactions));
+b
