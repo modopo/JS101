@@ -18,4 +18,20 @@ function merge(arr1, arr2) {
     }
 }
 
+function mergeSort(arr) {
+    if (arr.length === 1) {
+        return arr;
+    }
+
+    let front = arr.slice(0, arr.length / 2);
+    let back = arr.slice(arr.length / 2);
+
+    front = mergeSort(front);
+    back = mergeSort(back);
+
+    return merge(front, back);
+}
+
 console.log(merge([1, 1, 9], [2, 6, 8]));
+
+console.log(mergeSort(['Sue', 'Pete', 'Alice', 'Tyler', 'Rachel', 'Kim', 'Bonnie']));
